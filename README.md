@@ -12,7 +12,7 @@ GDC 2 is designed as a C++ application. The key features of the software are:
 + decompression of the whole collection,
 + decompression of only a single genome without decompressing the complete collection,
 
-### How good is GDC?
+### How good is GDC 2?
 
 * Compression factor
 
