@@ -25,9 +25,10 @@ In terms of compression factor (the ability to reduce the file size), GDC is usu
 
 The compression speed of GDC varies depending on data, but for the mentioned data sets is from 95 to 200MB/s at a computer equipped with 6-core Intel i7 4930K 3.4GHz processor. The decompression speed is dependent on the disk speed and is up to 1000 MB/s on the mentioned system.
 
-### Publication
+### Publications
 
-Publications
++ Deorowicz, S., Danek, A., Niemiec, M., GDC 2: Compression of large collections of genomes, Scientific Reports, 2015; 5(11565):1–12
 
-Deorowicz, S., Danek, A., Niemiec, M., GDC 2: Compression of large collections of genomes, Scientific Reports, 2015; 5(11565):1–12
+### Developers
 
+The GDC 2.x algorithm was invented by Sebastian Deorowicz and Agnieszka Danek. The implementation is by Sebastian Deorowicz, [Agnieszka Danek](https://github.com/agnieszkadanek), and Marcin Niemiec.
