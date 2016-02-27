@@ -29,5 +29,5 @@ The compression speed of GDC varies depending on data, but for the mentioned dat
 
 Publications
 
-Deorowicz, S., Danek, A., Niemiec, M., GDC 2: Compression of large collections of genomes, Scientific Reports, 2015; 5(11565):1–12, Abstract.
+Deorowicz, S., Danek, A., Niemiec, M., GDC 2: Compression of large collections of genomes, Scientific Reports, 2015; 5(11565):1–12
 
