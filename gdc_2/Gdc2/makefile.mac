@@ -1,0 +1,19 @@
+all: gdc2
+	
+CC 	= g++
+
+LIBS	= ../libs/libamac64.a ../libs/libz.1.2.8.dylib
+
+CFLAGS	= -Wall -O3 -m64   -std=c++11  -stdlib=libc++
+CLINK	= -lm  -O3   -std=c++11 -stdlib=libc++ $(LIBS)
+
+
+.cpp.o:
+	$(CC) $(CFLAGS) -c $< -o $@
+
+gdc2: c1stage.o c2stage.o fasta.o hasher.o main.o p1stage.o qsmodel.o queue.o rangecod.o timer.o
+	$(CC) $(CLINK) -o gdc2 c1stage.o c2stage.o fasta.o hasher.o main.o p1stage.o qsmodel.o queue.o rangecod.o timer.o  
+clean:
+	rm gdc2
+	rm *.o
+	 

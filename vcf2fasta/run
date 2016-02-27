@@ -1,0 +1,280 @@
+#!/bin/bash
+
+source config.ini
+
+## Start position of PAR 1 region in X chromosome
+START_X_MAL1=60001
+END_X_MAL1=2699520
+
+## Start position of PAR 2 region in X chromosome
+START_X_MAL2=154931044
+END_X_MAL2=155260560  
+
+## Start position of nonPAR region in X chromosome
+START_X_MAL=2699521
+END_X_MAL=154931043
+
+## Start position of nonPAR region in Y chromosome
+START_Y_MAL=2649521
+END_Y_MAL=59034049
+
+usage()
+{
+cat << EOF
+usage: $0 OPTIONS
+
+
+OPTIONS:
+   -h      Show this message
+   
+   -a      Download all necessary files (reference sequences and VCF files) and decompress them
+   -b      Preprocess reference sequences and VCF files for chromosomes X and Y (necessary to process these chromosomes)
+   -c      Create consensus sequences for all individuals from appropriate reference sequences and VCF minimal files, for specified chromosomes (\$CHROM) 		
+EOF
+}
+
+
+download()
+{
+	echo "********************************************************************************"
+	echo "*** Reference sequence(s) are being downloaded ***"
+	echo "********************************************************************************"
+
+
+
+	X_downloaded="0";
+
+	for c in $CHROM
+        do
+		echo $c
+		
+		 if [ ! -d chr$c ]
+            then
+           	  mkdir chr$c
+          fi		
+           	
+           	
+		if [[ $c == X* ]] && [[ $X_downloaded == "0" ]]
+                then
+			echo "*** Downloading reference sequence for chr X ***"
+			if [ -f chrX.fa.gz ]; then
+      			 rm chrX.fa.gz
+			fi
+			wget -nv ftp://ftp.ncbi.nlm.nih.gov/genbank/genomes/Eukaryotes/vertebrates_mammals/Homo_sapiens/GRCh37/Primary_Assembly/assembled_chromosomes/FASTA/chrX.fa.gz 
+			echo "*** Decompressing reference sequence for chr X ***"
+			gzip -d chrX.fa.gz
+			X_downloaded="1"
+		elif [ $c == "Y-mal" ]
+                   then
+			echo "*** Downloading reference sequence for chr Y ***"  
+			if [ -f chrY.fa.gz ]; then
+      			 rm chrY.fa.gz
+			fi
+			
+			wget -nv ftp://ftp.ncbi.nlm.nih.gov/genbank/genomes/Eukaryotes/vertebrates_mammals/Homo_sapiens/GRCh37/Primary_Assembly/assembled_chromosomes/FASTA/chrY.fa.gz 
+              echo "*** Decompressing reference sequence for chr Y ***" 
+              gzip -d chrY.fa.gz
+                        
+              
+        
+
+          
+		elif [[ $c != X* ]] 
+		then
+			echo "*** Downloading reference sequence for chr $c ***"  
+			if [ -f chr$c.fa.gz ]; then
+      			 rm chr$c.fa.gz
+			fi
+			
+			wget -nv ftp://ftp.ncbi.nlm.nih.gov/genbank/genomes/Eukaryotes/vertebrates_mammals/Homo_sapiens/GRCh37/Primary_Assembly/assembled_chromosomes/FASTA/chr$c.fa.gz 
+			echo "*** Decompressing reference sequence for chr $c ***"
+                        gzip -d chr$c.fa.gz
+                        
+           	mv chr$c.fa chr$c/_chr$c.fa
+
+		fi
+	done
+
+
+	echo "************************************************"
+	echo "*** VCF file(s) are being downloaded ***"
+	echo "************************************************" 
+	
+
+     if [ ! -d vcf ]
+	then
+	  mkdir vcf
+	fi		
+	
+	cd vcf
+	
+	X_downloaded=0;  
+
+	for c in $CHROM
+	do	
+		if [[ $c == X* ]] && [[ $X_downloaded == "0" ]]
+                then
+			if [ -f ALL*chrX*.gz ]; then
+      			 rm ALL*chrX*.gz
+			fi
+			echo "*** Downloading VCF file for chr X ***"
+			wget -nv $FTP/phase1/analysis_results/integrated_call_sets/*chrX*.gz 
+			echo "*** Decompressing VCF file for chr X***"
+			gzip -d *chrX*.gz
+			X_downloaded=1  
+		elif [ $c == "Y-mal" ]
+	   	then
+			if [ -f ALL*chrY*.gz ]; then
+      			 rm ALL*chrY*.gz
+			fi
+			
+			echo "*** Downloading VCF file for chr Y ***"  
+			wget -nv $FTP/phase1/analysis_results/integrated_call_sets/*chrY.phase1*.gz 
+			echo "*** Decompressing VCF file for chr Y***" 
+			gzip -d *chrY.phase1*.gz
+		elif [[ $c != X* ]] 
+		then
+			if [ -f ALL*chr$c.*.gz ]; then
+      			 rm ALL*chr$c.*.gz
+			fi
+			
+			echo "*** Downloading VCF file for chr $c ***" 
+			wget -nv $FTP/phase1/analysis_results/integrated_call_sets/*chr$c.*.gz  
+			echo "*** Decompressing VCF file for chr $c ***"
+			gzip -d *chr$c.*.gz			
+		fi
+	done
+	cd ..
+}
+
+preprocess()
+{
+	echo "*******************************************************************************************************"
+        echo "*** Processing reference sequences of chromosomes X and Y  (dividing into regions PAR1/PAR2/nonPAR) ***"
+        echo "*******************************************************************************************************"
+
+
+		if [ -f chrX.fa ]; then
+           	src/cut-ref chrX.fa chrXY-mal1.fa $START_X_MAL1 $END_X_MAL1
+           	if [ ! -d chrXY-mal1 ]
+              then
+           	  mkdir chrXY-mal1
+              fi		
+           	mv chrXY-mal1.fa chrXY-mal1/_chrXY-mal1.fa 
+           	
+           	src/cut-ref chrX.fa chrXY-mal2.fa $START_X_MAL2 $END_X_MAL2
+           	if [ ! -d chrXY-mal2 ]
+              then
+           	  mkdir chrXY-mal2
+              fi
+           	mv chrXY-mal2.fa chrXY-mal2/_chrXY-mal2.fa 
+           	
+              src/cut-ref chrX.fa chrX-mal.fa $START_X_MAL $END_X_MAL
+              if [ ! -d chrX-mal ]
+              then
+           	  mkdir chrX-mal
+              fi
+              mv chrX-mal.fa chrX-mal/_chrX-mal.fa 
+              
+              if [ ! -d chrX-fem ]
+              then
+           	  mkdir chrX-fem
+              fi
+              mv chrX.fa chrX-fem/_chrX-fem.fa 
+		else
+      		echo "No reference sequence for chromosome X - download before processing"
+		fi
+		if [ -f chrY.fa ]; then
+      		if [ ! -d chrY-mal ]
+              then
+           	  mkdir chrY-mal
+              fi
+      		src/cut-ref chrY.fa chrY-mal/_chrY-mal.fa $START_Y_MAL $END_Y_MAL
+      		rm chrY.fa 
+     	else
+           	echo "No reference sequence for chromosome Y - download before processing"
+         fi
+	
+    echo "********************************************************************"
+    echo "*** Processing VCF of chromosome Y (removing NA21313 individual) ***"
+    echo "********************************************************************"
+
+    cd vcf
+    if [ -f ALL.chrY*genotypes.vcf ]; then
+     	cut -f-534 ALL.chrY*.vcf > ALL.chrY.phase1_samtools_si.20101123.snps.low_coverage.genotypes-modified.vcf
+    else
+        echo "No VCF file sequence for chromosome Y - download before processing"
+    fi
+    cd ..
+
+	echo "*************************************************************************************************************************************"
+	echo "*** Processing VCF of chromosome X - selection of variants for female individuals and for male in regionns PAR1, PAR2 and non PAR ***"
+    echo "*************************************************************************************************************************************"   
+
+    cd vcf
+     if [ -f ALL.chrX*.vcf ]; then
+          ../src/processX ALL.chrX.integrated_phase1_v3.20101123.snps_indels_svs.genotypes.vcf
+
+     	mv ALL.chrX.integrated_phase1_v3.20101123.snps_indels_svs.genotypes.vcf-fem   ALL.chrX.integrated_phase1_v3.20101123.snps_indels_svs.genotypes.vcf-fem
+      
+      	mv ALL.chrX.integrated_phase1_v3.20101123.snps_indels_svs.genotypes.vcf-mal1   ALL.chrX.integrated_phase1_v3.20101123.snps_indels_svs.genotypes.vcf-mal1
+      	
+      	mv ALL.chrX.integrated_phase1_v3.20101123.snps_indels_svs.genotypes.vcf-mal  ALL.chrX.integrated_phase1_v3.20101123.snps_indels_svs.genotypes.vcf-mal
+      	
+      	mv ALL.chrX.integrated_phase1_v3.20101123.snps_indels_svs.genotypes.vcf-mal2   ALL.chrX.integrated_phase1_v3.20101123.snps_indels_svs.genotypes.vcf-mal2
+    else
+        echo "No VCF file sequence for chromosome X - download before processing"
+    fi
+    cd ..
+    
+    echo "***************************************"
+    echo "*** All possible preprocessing done ***"
+    echo "***************************************"                                                          
+
+}
+
+consensus()
+{
+	for c in $CHROM
+        do
+		echo "*******************************************************************************************************"
+        	echo "*** Creating consensus sequences for all individuals, for chromosome $c, from reference and VCF ***"
+        	echo "*******************************************************************************************************"
+
+		if [ $c == "Y-mal" ]
+		then
+			./src/VCF2FASTA-h vcf/ALL.chrY.phase1*-modified.vcf  chr$c/_chr$c.fa  $START_Y_MAL
+			mv vcf/ALL.chrY.phase1*-modified.vcf*.fa  chr$c/
+		elif [ $c ==  "X-mal" ]; then
+			./src/VCF2FASTA-h vcf/ALL.chrX.*vcf-mal chr$c/_chr$c.fa   $START_X_MAL
+			mv vcf/ALL.chrX.*vcf-mal.*.fa  chr$c/
+		elif [ $c == "XY-mal1" ]; then
+			./src/VCF2FASTA-d vcf/ALL.chrX.*vcf-mal1 chr$c/_chr$c.fa  $START_X_MAL1
+			mv vcf/ALL.chrX.*vcf-mal1.*.fa  chr$c/
+		elif [ $c == "XY-mal2" ]; then
+               ./src/VCF2FASTA-d vcf/ALL.chrX.*vcf-mal2 chr$c/_chr$c.fa   $START_X_MAL2
+               mv vcf/ALL.chrX.*vcf-mal2.*.fa  chr$c/
+		elif [ $c == "X-fem" ]; then
+            ./src/VCF2FASTA-d vcf/ALL.chrX.*vcf-fem  chr$c/_chr$c.fa 
+            mv vcf/ALL.chrX.*vcf-fem.*.fa  chr$c/
+		else
+			./src/VCF2FASTA-d  vcf/ALL.chr$c.*vcf  chr$c/_chr$c.fa
+			mv vcf/ALL.chr$c.*vcf.*.fa  chr$c/
+		fi 
+	done	
+}
+
+#Process the arguments
+while getopts abch opt
+do
+   case "$opt" in
+	h) usage; exit 1;;
+	a) download;; 
+	b) preprocess;;
+	c) consensus;;
+	?) usage; exit;;
+   esac
+done
+
+
+
