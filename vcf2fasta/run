@@ -60,7 +60,7 @@ download()
 			if [ -f chrX.fa.gz ]; then
       			 rm chrX.fa.gz
 			fi
-			wget -nv ftp://ftp.ncbi.nlm.nih.gov/genbank/genomes/Eukaryotes/vertebrates_mammals/Homo_sapiens/GRCh37/Primary_Assembly/assembled_chromosomes/FASTA/chrX.fa.gz 
+			wget -nv ftp://ftp.ncbi.nlm.nih.gov/genomes/archive/old_genbank/Eukaryotes/vertebrates_mammals/Homo_sapiens/GRCh37/Primary_Assembly/assembled_chromosomes/FASTA/chrX.fa.gz 
 			echo "*** Decompressing reference sequence for chr X ***"
 			gzip -d chrX.fa.gz
 			X_downloaded="1"
@@ -71,7 +71,7 @@ download()
       			 rm chrY.fa.gz
 			fi
 			
-			wget -nv ftp://ftp.ncbi.nlm.nih.gov/genbank/genomes/Eukaryotes/vertebrates_mammals/Homo_sapiens/GRCh37/Primary_Assembly/assembled_chromosomes/FASTA/chrY.fa.gz 
+			wget -nv ftp://ftp.ncbi.nlm.nih.gov/genomes/archive/old_genbank/Eukaryotes/vertebrates_mammals/Homo_sapiens/GRCh37/Primary_Assembly/assembled_chromosomes/FASTA/chrY.fa.gz 
               echo "*** Decompressing reference sequence for chr Y ***" 
               gzip -d chrY.fa.gz
                         
@@ -86,7 +86,7 @@ download()
       			 rm chr$c.fa.gz
 			fi
 			
-			wget -nv ftp://ftp.ncbi.nlm.nih.gov/genbank/genomes/Eukaryotes/vertebrates_mammals/Homo_sapiens/GRCh37/Primary_Assembly/assembled_chromosomes/FASTA/chr$c.fa.gz 
+			wget -nv ftp://ftp.ncbi.nlm.nih.gov/genomes/archive/old_genbank/Eukaryotes/vertebrates_mammals/Homo_sapiens/GRCh37/Primary_Assembly/assembled_chromosomes/FASTA/chr$c.fa.gz 
 			echo "*** Decompressing reference sequence for chr $c ***"
                         gzip -d chr$c.fa.gz
                         
