@@ -1,6 +1,6 @@
 # Genome Differential Compressor 2
 [![GitHub downloads](https://img.shields.io/github/downloads/refresh-bio/gdc2/total.svg?style=flag&label=GitHub%20downloads)](https://github.com/refresh-bio/GDC2/releases)
-[![Bioconda downloads](https://img.shields.io/conda/dn/bioconda/gdc2.svg?style=flag&label=Bioconda%20downloads)](https://anaconda.org/bioconda/gdc)
+[![Bioconda downloads](https://img.shields.io/conda/dn/bioconda/gdc.svg?style=flag&label=Bioconda%20downloads)](https://anaconda.org/bioconda/gdc)
 
 ## GDC — What is it?
 
