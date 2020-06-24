@@ -1,4 +1,7 @@
 # Genome Differential Compressor 2
+[![GitHub downloads](https://img.shields.io/github/downloads/refresh-bio/gdc2/total.svg?style=flag&label=GitHub%20downloads)](https://github.com/refresh-bio/GDC2/releases)
+[![Bioconda downloads](https://img.shields.io/conda/dn/bioconda/gdc2.svg?style=flag&label=Bioconda%20downloads)](https://anaconda.org/bioconda/gdc)
+
 ## GDC — What is it?
 
 Genome Differential Compressor is a utility designed for compression of genome collections from the same species. The amount of such collections can be huge, e.g., a few (or tens) of gigabytes, so a need for a robust data compression tool is clear. Universal compression programs like gzip or bzip2 might be used for this purpose, but it is obvious that a specialized tool can work much better, since a universal compressor does not use the properties of such data sets, e.g., long approximate repetitions at long distances.
